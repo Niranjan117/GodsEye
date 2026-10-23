@@ -1,30 +1,50 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_application_1/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('admin sign-in opens the desktop console', (tester) async {
+    await tester.pumpWidget(const GodsEyeApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text("God's Eye - Admin Login"), findsOneWidget);
+    expect(find.text('User name:'), findsOneWidget);
+    expect(find.text('Password:'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text("God's Eye - Surveillance Console"), findsOneWidget);
+    expect(find.text('Camera feed'), findsOneWidget);
+    expect(find.text('Search results'), findsOneWidget);
+    expect(find.text('Load Feed'), findsOneWidget);
+    expect(find.text('Find feed...'), findsOneWidget);
+    expect(find.text('Options'), findsOneWidget);
+    expect(find.text('Exit'), findsOneWidget);
+  });
+
+  testWidgets('console exposes separate Find, Track, Settings, and Hints', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const GodsEyeApp());
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    for (final section in ['Find', 'Track', 'Settings', 'Hints']) {
+      expect(find.text(section), findsWidgets);
+    }
+
+    await tester.tap(find.text('Track').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Track actions'), findsOneWidget);
+    expect(find.text('Track log'), findsOneWidget);
+    expect(find.text('Track feed...'), findsOneWidget);
+
+    await tester.tap(find.text('Settings').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Display and feed preferences'), findsOneWidget);
+
+    await tester.tap(find.text('Hints').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Helpful usage notes will appear here.'), findsOneWidget);
   });
 }
