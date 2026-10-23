@@ -1,14 +1,15 @@
 # God's Eye
 
-A Flutter Windows desktop UI prototype with a classic dialog-style layout.
+A Flutter Windows desktop UI prototype using `fluent_ui` and Microsoft's
+Fluent UI System Icons for Windows-style controls and iconography.
 
-The current phase contains only a static front-end skeleton:
+The current phase is a static front-end skeleton:
 
-- Admin sign-in screen (visual placeholder; no authentication)
-- Find and Track tabs with separate feed-source dropdown options
-- Camera preview and results/log placeholders
+- Admin sign-in preview (not connected to authentication)
+- Find and Track sections with independent feed-source dropdowns
+- Camera preview, feed list, results/log, and command placeholders
 - Settings and Hints sections
-- Classic-style action buttons and bottom controls
+- Native Windows title bar and window controls
 
-Feed loading, searching, tracking, and settings are not connected to services or
-analysis logic. No AI models or backend are included.
+Feed loading, searching, tracking, and analysis are not connected to services
+or models.

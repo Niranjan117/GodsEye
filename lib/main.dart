@@ -1,27 +1,20 @@
-import 'package:flutter/material.dart';
+import 'package:fluent_ui/fluent_ui.dart' hide FluentIcons;
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/widgets.dart' as widgets;
 
 void main() {
   runApp(const GodsEyeApp());
 }
-
-const _windowBlue = Color(0xFF2F6FB2);
-const _dialogGray = Color(0xFFECE9D8);
-const _lineGray = Color(0xFF9A9A9A);
 
 class GodsEyeApp extends StatelessWidget {
   const GodsEyeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return FluentApp(
       title: "God's Eye",
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: false,
-        fontFamily: 'Tahoma',
-        scaffoldBackgroundColor: const Color(0xFFB7C7D8),
-        colorScheme: ColorScheme.fromSeed(seedColor: _windowBlue),
-      ),
+      theme: FluentThemeData(accentColor: Colors.blue, fontFamily: 'Segoe UI'),
       home: const AdminLoginScreen(),
     );
   }
@@ -32,63 +25,57 @@ class AdminLoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return ScaffoldPage(
+      content: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: _WindowFrame(
-            title: "God's Eye - Admin Login",
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.remove_red_eye_outlined,
-                    size: 42,
-                    color: _windowBlue,
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Administrator sign in",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 18),
-                  const _LabeledField(label: 'User name'),
-                  const SizedBox(height: 12),
-                  const _LabeledField(label: 'Password', obscureText: true),
-                  const SizedBox(height: 18),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      _ClassicButton(
-                        label: 'Exit',
-                        onPressed: () {},
-                        width: 92,
-                      ),
-                      const SizedBox(width: 10),
-                      _ClassicButton(
-                        label: 'Sign in',
-                        isPrimary: true,
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const MainWindow(),
-                            ),
-                          );
-                        },
-                        width: 100,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'UI preview only - sign-in is not connected to an account.',
-                    style: TextStyle(fontSize: 11, color: Colors.black54),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Card(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Icon(
+                  FluentIcons.shield_lock_24_regular,
+                  size: 36,
+                  color: Color(0xFF0067C0),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  "God's Eye",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Administrator sign in',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 24),
+                const Text('User name'),
+                const SizedBox(height: 6),
+                const TextBox(placeholder: 'Enter user name'),
+                const SizedBox(height: 16),
+                const Text('Password'),
+                const SizedBox(height: 6),
+                const PasswordBox(placeholder: 'Enter password'),
+                const SizedBox(height: 22),
+                FilledButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      FluentPageRoute<void>(builder: (_) => const MainWindow()),
+                    );
+                  },
+                  child: const Text('Sign in'),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Preview only. Sign-in is not connected to an account.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: Color(0xFF666666)),
+                ),
+              ],
             ),
           ),
         ),
@@ -105,131 +92,147 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
-  String _section = 'Find';
+  int _selectedTab = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: _WindowFrame(
-            title: "God's Eye - Surveillance Console",
-            child: Column(
+    return ScaffoldPage(
+      padding: EdgeInsets.zero,
+      content: TabView(
+        currentIndex: _selectedTab,
+        onChanged: (index) => setState(() => _selectedTab = index),
+        closeButtonVisibility: CloseButtonVisibilityMode.never,
+        tabs: [
+          Tab(
+            text: const Text('Find'),
+            icon: const Icon(FluentIcons.search_24_regular),
+            body: _ConsoleTab(
+              section: 'Find',
+              icon: FluentIcons.search_24_regular,
+              actionLabel: 'Search',
+              feedLabel: 'Find feed',
+              feedOptions: const ['Select a feed...', 'North Gate', 'Lobby'],
+              onOptions: () => setState(() => _selectedTab = 2),
+            ),
+          ),
+          Tab(
+            text: const Text('Track'),
+            icon: const Icon(FluentIcons.video_24_regular),
+            body: _ConsoleTab(
+              section: 'Track',
+              icon: FluentIcons.video_24_regular,
+              actionLabel: 'Track',
+              feedLabel: 'Track feed',
+              feedOptions: const ['Select a feed...', 'Camera 1', 'Camera 2'],
+              onOptions: () => setState(() => _selectedTab = 2),
+            ),
+          ),
+          Tab(
+            text: const Text('Settings'),
+            icon: const Icon(FluentIcons.settings_24_regular),
+            body: _SettingsPage(
+              onOptions: () => setState(() => _selectedTab = 0),
+            ),
+          ),
+          Tab(
+            text: const Text('Hints'),
+            icon: const Icon(FluentIcons.question_circle_24_regular),
+            body: const _HintsPage(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConsoleTab extends StatefulWidget {
+  const _ConsoleTab({
+    required this.section,
+    required this.icon,
+    required this.actionLabel,
+    required this.feedLabel,
+    required this.feedOptions,
+    required this.onOptions,
+  });
+
+  final String section;
+  final widgets.IconData icon;
+  final String actionLabel;
+  final String feedLabel;
+  final List<String> feedOptions;
+  final VoidCallback onOptions;
+
+  @override
+  State<_ConsoleTab> createState() => _ConsoleTabState();
+}
+
+class _ConsoleTabState extends State<_ConsoleTab> {
+  String? _selectedFeed;
+  String? _selectedLayout = 'Default';
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _SectionTabs(
-                  selected: _section,
-                  onSelected: (value) => setState(() => _section = value),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-                    child: _section == 'Settings'
-                        ? const _SettingsPanel()
-                        : _section == 'Hints'
-                        ? const _HintsPanel()
-                        : _ConsolePanel(section: _section),
+                SizedBox(
+                  width: 196,
+                  child: _FeedList(
+                    section: widget.section,
+                    options: widget.feedOptions,
                   ),
                 ),
-                _BottomControls(section: _section),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: _ContentPanel(
+                          title: 'Camera feed',
+                          icon: FluentIcons.camera_24_regular,
+                          child: const _FeedPreview(),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Expanded(
+                        flex: 2,
+                        child: _ContentPanel(
+                          title: widget.section == 'Find'
+                              ? 'Detection log and results'
+                              : 'Track log',
+                          icon: FluentIcons.document_24_regular,
+                          child: const _ResultsList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 14),
+                SizedBox(
+                  width: 166,
+                  child: _ActionPanel(
+                    actionLabel: widget.actionLabel,
+                    section: widget.section,
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ConsolePanel extends StatelessWidget {
-  const _ConsolePanel({required this.section});
-
-  final String section;
-
-  @override
-  Widget build(BuildContext context) {
-    final isFind = section == 'Find';
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          flex: 5,
-          child: Column(
-            children: [
-              Expanded(
-                flex: 3,
-                child: _Panel(
-                  title: 'Camera feed',
-                  child: const _FeedPlaceholder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                flex: 2,
-                child: _Panel(
-                  title: isFind ? 'Search results' : 'Track log',
-                  child: const _LogPlaceholder(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          width: 150,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                '$section actions',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              _ClassicButton(label: 'Load Feed', onPressed: () {}),
-              const SizedBox(height: 8),
-              _ClassicButton(
-                label: isFind ? 'Search' : 'Track',
-                onPressed: () {},
-              ),
-              const SizedBox(height: 8),
-              _ClassicButton(
-                label: isFind ? 'Clear Results' : 'Stop Track',
-                onPressed: () {},
-              ),
-              const Spacer(),
-              const Text(
-                'Controls are placeholders in this UI preview.',
-                style: TextStyle(fontSize: 11, color: Colors.black54),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FeedPlaceholder extends StatelessWidget {
-  const _FeedPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFF20252B),
-      alignment: Alignment.center,
-      child: const Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.videocam_outlined, size: 42, color: Colors.white70),
-          SizedBox(height: 8),
-          Text(
-            'No camera feed loaded',
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'Static preview area',
-            style: TextStyle(color: Colors.white60, fontSize: 11),
+          const SizedBox(height: 14),
+          _BottomBar(
+            feedLabel: widget.feedLabel,
+            feedOptions: widget.feedOptions,
+            selectedFeed: _selectedFeed,
+            onFeedChanged: (value) => setState(() => _selectedFeed = value),
+            selectedLayout: _selectedLayout,
+            onLayoutChanged: (value) => setState(() => _selectedLayout = value),
+            onOptions: widget.onOptions,
           ),
         ],
       ),
@@ -237,147 +240,35 @@ class _FeedPlaceholder extends StatelessWidget {
   }
 }
 
-class _LogPlaceholder extends StatelessWidget {
-  const _LogPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      child: const Text(
-        'No results to display.',
-        style: TextStyle(color: Colors.black54),
-      ),
-    );
-  }
-}
-
-class _SettingsPanel extends StatelessWidget {
-  const _SettingsPanel();
-
-  @override
-  Widget build(BuildContext context) {
-    return _Panel(
-      title: 'Settings',
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('Display and feed preferences'),
-            SizedBox(height: 12),
-            _LabeledDropdown(
-              label: 'Preview quality',
-              values: ['Standard', 'High'],
-            ),
-            SizedBox(height: 12),
-            _LabeledDropdown(label: 'Layout', values: ['Classic', 'Compact']),
-            SizedBox(height: 18),
-            Text(
-              'Settings are visual placeholders; no feeds or analysis are configured.',
-              style: TextStyle(fontSize: 11, color: Colors.black54),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HintsPanel extends StatelessWidget {
-  const _HintsPanel();
-
-  @override
-  Widget build(BuildContext context) {
-    return _Panel(
-      title: 'Hints',
-      child: const Padding(
-        padding: EdgeInsets.all(14),
-        child: Text('Helpful usage notes will appear here.'),
-      ),
-    );
-  }
-}
-
-class _BottomControls extends StatelessWidget {
-  const _BottomControls({required this.section});
+class _FeedList extends StatelessWidget {
+  const _FeedList({required this.section, required this.options});
 
   final String section;
+  final List<String> options;
 
   @override
   Widget build(BuildContext context) {
-    final feedOptions = section == 'Track'
-        ? ['Track feed...', 'Camera 1', 'Camera 2']
-        : ['Find feed...', 'North Gate', 'Lobby'];
-    final feedLabel = section == 'Track' ? 'Track feed' : 'Find feed';
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: _lineGray)),
-        color: _dialogGray,
-      ),
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: _LabeledDropdown(label: feedLabel, values: feedOptions),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: _LabeledDropdown(
-              label: 'Profile',
-              values: ['Default', 'Custom'],
-            ),
-          ),
-          const SizedBox(width: 16),
-          _ClassicButton(label: 'Options', onPressed: () {}),
-          const SizedBox(width: 8),
-          _ClassicButton(label: 'Exit', onPressed: () {}),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionTabs extends StatelessWidget {
-  const _SectionTabs({required this.selected, required this.onSelected});
-
-  final String selected;
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-      decoration: const BoxDecoration(
-        color: _dialogGray,
-        border: Border(bottom: BorderSide(color: _lineGray)),
-      ),
-      child: Row(
-        children: ['Find', 'Track', 'Settings', 'Hints'].map((section) {
-          final active = section == selected;
+    return _ContentPanel(
+      title: '$section feeds',
+      icon: FluentIcons.folder_24_regular,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        children: options.skip(1).map((name) {
           return Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: InkWell(
-              onTap: () => onSelected(section),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 7,
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            child: Button(
+              onPressed: () {},
+              style: ButtonStyle(
+                padding: WidgetStatePropertyAll(
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 ),
-                decoration: BoxDecoration(
-                  color: active
-                      ? const Color(0xFFF7F6EF)
-                      : const Color(0xFFD8D5C7),
-                  border: Border.all(color: active ? Colors.white : _lineGray),
-                ),
-                child: Text(
-                  section,
-                  style: TextStyle(
-                    fontWeight: active ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(FluentIcons.camera_20_regular, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(name, overflow: TextOverflow.ellipsis)),
+                ],
               ),
             ),
           );
@@ -387,225 +278,405 @@ class _SectionTabs extends StatelessWidget {
   }
 }
 
-class _Panel extends StatelessWidget {
-  const _Panel({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 5),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: _lineGray),
-              color: const Color(0xFFF7F6EF),
-            ),
-            child: child,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LabeledField extends StatelessWidget {
-  const _LabeledField({required this.label, this.obscureText = false});
-
-  final String label;
-  final bool obscureText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(width: 88, child: Text('$label:')),
-        Expanded(
-          child: SizedBox(
-            height: 32,
-            child: TextField(
-              obscureText: obscureText,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 6,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: _lineGray),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: _lineGray),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LabeledDropdown extends StatelessWidget {
-  const _LabeledDropdown({required this.label, required this.values});
-
-  final String label;
-  final List<String> values;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text('$label: '),
-        Expanded(
-          child: SizedBox(
-            height: 30,
-            child: DropdownButtonFormField<String>(
-              initialValue: values.first,
-              isExpanded: true,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: _lineGray),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: _lineGray),
-                ),
-              ),
-              items: values
-                  .map(
-                    (value) => DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value, overflow: TextOverflow.ellipsis),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (_) {},
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ClassicButton extends StatelessWidget {
-  const _ClassicButton({
-    required this.label,
-    required this.onPressed,
-    this.width,
-    this.isPrimary = false,
+class _ContentPanel extends StatelessWidget {
+  const _ContentPanel({
+    required this.title,
+    required this.icon,
+    required this.child,
   });
 
-  final String label;
-  final VoidCallback onPressed;
-  final double? width;
-  final bool isPrimary;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: 32,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.black,
-          backgroundColor: isPrimary ? const Color(0xFFDDEEFF) : _dialogGray,
-          side: BorderSide(color: isPrimary ? _windowBlue : _lineGray),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
-        ),
-        child: Text(label, overflow: TextOverflow.ellipsis),
-      ),
-    );
-  }
-}
-
-class _WindowFrame extends StatelessWidget {
-  const _WindowFrame({required this.title, required this.child});
-
   final String title;
+  final widgets.IconData icon;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _dialogGray,
-        border: Border.all(color: const Color(0xFF5D7892), width: 1.5),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x55000000),
-            blurRadius: 12,
-            offset: Offset(3, 4),
-          ),
-        ],
-      ),
+    return Card(
+      padding: EdgeInsets.zero,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 32,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            height: 38,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF5C9CE0), Color(0xFF1F5EA5)],
-              ),
+              border: Border(bottom: BorderSide(color: Color(0xFFD6D6D6))),
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.remove_red_eye_outlined,
-                  size: 16,
-                  color: Colors.white,
-                ),
-                const SizedBox(width: 7),
+                Icon(icon, size: 18, color: const Color(0xFF0067C0)),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 22,
-                  height: 20,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFCB514A),
-                    border: Border.all(color: Colors.white70),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  child: const Text(
-                    '×',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      height: 1,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
             ),
           ),
           Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _FeedPreview extends StatelessWidget {
+  const _FeedPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFF17191C),
+      alignment: Alignment.center,
+      child: const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            FluentIcons.video_24_regular,
+            size: 34,
+            color: Color(0xB3FFFFFF),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'No camera feed loaded',
+            style: TextStyle(color: Colors.white, fontSize: 15),
+          ),
+          SizedBox(height: 4),
+          Text(
+            'Select a feed to preview',
+            style: TextStyle(color: Color(0xFFBBBBBB), fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ResultsList extends StatelessWidget {
+  const _ResultsList();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: const [
+        Text('No results to display.', style: TextStyle(fontSize: 13)),
+        SizedBox(height: 6),
+        Text(
+          'Detection and matching are not enabled in this UI preview.',
+          style: TextStyle(fontSize: 12, color: Color(0xFF666666)),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionPanel extends StatelessWidget {
+  const _ActionPanel({required this.actionLabel, required this.section});
+
+  final String actionLabel;
+  final String section;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Commands', style: FluentTheme.of(context).typography.subtitle),
+        const SizedBox(height: 10),
+        _CommandButton(
+          label: 'Load Feed',
+          icon: FluentIcons.folder_open_24_regular,
+          onPressed: () {},
+        ),
+        const SizedBox(height: 8),
+        _CommandButton(
+          label: actionLabel,
+          icon: section == 'Find'
+              ? FluentIcons.search_24_regular
+              : FluentIcons.video_24_regular,
+          primary: true,
+          onPressed: () {},
+        ),
+        const SizedBox(height: 8),
+        _CommandButton(
+          label: section == 'Find' ? 'Clear Results' : 'Stop',
+          icon: section == 'Find'
+              ? FluentIcons.delete_24_regular
+              : FluentIcons.stop_24_regular,
+          onPressed: () {},
+        ),
+        const Spacer(),
+        const Text(
+          'Actions are visual placeholders.',
+          style: TextStyle(fontSize: 12, color: Color(0xFF666666)),
+        ),
+      ],
+    );
+  }
+}
+
+class _CommandButton extends StatelessWidget {
+  const _CommandButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.primary = false,
+  });
+
+  final String label;
+  final widgets.IconData icon;
+  final VoidCallback onPressed;
+  final bool primary;
+
+  @override
+  Widget build(BuildContext context) {
+    final child = Row(
+      children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: 8),
+        Expanded(child: Text(label)),
+      ],
+    );
+    return SizedBox(
+      height: 38,
+      child: primary
+          ? FilledButton(onPressed: onPressed, child: child)
+          : Button(onPressed: onPressed, child: child),
+    );
+  }
+}
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({
+    required this.feedLabel,
+    required this.feedOptions,
+    required this.selectedFeed,
+    required this.onFeedChanged,
+    required this.selectedLayout,
+    required this.onLayoutChanged,
+    required this.onOptions,
+  });
+
+  final String feedLabel;
+  final List<String> feedOptions;
+  final String? selectedFeed;
+  final ValueChanged<String?> onFeedChanged;
+  final String? selectedLayout;
+  final ValueChanged<String?> onLayoutChanged;
+  final VoidCallback onOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 900;
+        final optionsButton = Button(
+          onPressed: onOptions,
+          child: const Row(
+            children: [
+              Icon(FluentIcons.options_24_regular, size: 18),
+              SizedBox(width: 8),
+              Text('Options'),
+            ],
+          ),
+        );
+        final feedDropdown = _Dropdown(
+          value: selectedFeed,
+          options: feedOptions,
+          onChanged: onFeedChanged,
+        );
+        final layoutDropdown = _Dropdown(
+          value: selectedLayout,
+          options: const ['Default', 'Compact', 'Expanded'],
+          onChanged: onLayoutChanged,
+        );
+
+        return Card(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: compact
+              ? Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(feedLabel),
+                        const SizedBox(width: 8),
+                        Expanded(child: feedDropdown),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Text('Layout'),
+                        const SizedBox(width: 8),
+                        Expanded(child: layoutDropdown),
+                        const SizedBox(width: 12),
+                        optionsButton,
+                      ],
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Text(feedLabel),
+                    const SizedBox(width: 8),
+                    SizedBox(width: 210, child: feedDropdown),
+                    const SizedBox(width: 20),
+                    const Text('Layout'),
+                    const SizedBox(width: 8),
+                    SizedBox(width: 150, child: layoutDropdown),
+                    const Spacer(),
+                    optionsButton,
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _Dropdown extends StatelessWidget {
+  const _Dropdown({
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final String? value;
+  final List<String> options;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ComboBox<String>(
+      value: value,
+      isExpanded: true,
+      placeholder: const Text('Select...'),
+      items: options
+          .map(
+            (option) =>
+                ComboBoxItem<String>(value: option, child: Text(option)),
+          )
+          .toList(),
+      onChanged: onChanged,
+    );
+  }
+}
+
+class _SettingsPage extends StatelessWidget {
+  const _SettingsPage({required this.onOptions});
+
+  final VoidCallback onOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Settings', style: FluentTheme.of(context).typography.title),
+          const SizedBox(height: 8),
+          const Text(
+            'Configure the desktop interface. Feed and analysis settings are placeholders.',
+          ),
+          const SizedBox(height: 20),
+          const _SettingRow(
+            icon: FluentIcons.video_24_regular,
+            title: 'Preview quality',
+            description: 'Choose the display quality for the feed preview.',
+            child: _Dropdown(
+              value: 'Standard',
+              options: ['Standard', 'High'],
+              onChanged: _ignoreSelection,
+            ),
+          ),
+          const Divider(),
+          const _SettingRow(
+            icon: FluentIcons.arrow_expand_24_regular,
+            title: 'Workspace layout',
+            description: 'Choose how panels are arranged.',
+            child: _Dropdown(
+              value: 'Classic',
+              options: ['Classic', 'Compact'],
+              onChanged: _ignoreSelection,
+            ),
+          ),
+          const Spacer(),
+          Button(onPressed: onOptions, child: const Text('Return to console')),
+        ],
+      ),
+    );
+  }
+}
+
+void _ignoreSelection(String? value) {}
+
+class _SettingRow extends StatelessWidget {
+  const _SettingRow({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.child,
+  });
+
+  final widgets.IconData icon;
+  final String title;
+  final String description;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Icon(icon, size: 24, color: const Color(0xFF0067C0)),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 4),
+                Text(description, style: const TextStyle(fontSize: 12)),
+              ],
+            ),
+          ),
+          SizedBox(width: 180, child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _HintsPage extends StatelessWidget {
+  const _HintsPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Hints', style: FluentTheme.of(context).typography.title),
+          const SizedBox(height: 16),
+          const InfoBar(
+            title: Text('Getting started'),
+            content: Text(
+              'Choose Find or Track, select a feed, then use the command panel. '
+              'These controls are placeholders in the current UI phase.',
+            ),
+            severity: InfoBarSeverity.info,
+          ),
         ],
       ),
     );

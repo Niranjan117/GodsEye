@@ -31,9 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  # Keep within the Flutter 3.41-compatible Fluent UI releases.
+  fluent_ui: ">=4.15.1 <4.16.0"
+  fluentui_system_icons: ^1.1.273
 
 dev_dependencies:
   flutter_test:
