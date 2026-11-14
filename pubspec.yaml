@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  file_picker: ^10.3.10
   # Keep within the Flutter 3.41-compatible Fluent UI releases.
   fluent_ui: ">=4.15.1 <4.16.0"
   fluentui_system_icons: ^1.1.273

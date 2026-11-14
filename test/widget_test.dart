@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
-
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_application_1/main.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('admin sign-in opens the desktop console', (tester) async {
@@ -18,7 +18,7 @@ void main() {
     expect(find.text('Detection log and results'), findsOneWidget);
     expect(find.text('Load Feed'), findsOneWidget);
     expect(find.text('Find feed'), findsOneWidget);
-    expect(find.text('Options'), findsOneWidget);
+    expect(find.text('Options'), findsNothing);
     expect(find.text('Exit'), findsNothing);
     expect(find.text('×'), findsNothing);
   });
@@ -50,5 +50,23 @@ void main() {
     await tester.tap(find.text('Hints').first);
     await tester.pumpAndSettle();
     expect(find.text('Getting started'), findsOneWidget);
+  });
+
+  testWidgets('local search ranks a person and opens the Track tab', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const GodsEyeApp());
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextBox), 'blue jeans, black backpack');
+    await tester.tap(find.text('Search'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('% Match'), findsWidgets);
+    await tester.tap(find.textContaining('% Match').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cross-Camera Sighting Timeline'), findsOneWidget);
   });
 }
